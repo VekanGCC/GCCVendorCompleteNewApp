@@ -38,6 +38,7 @@ export class AppComponent implements OnInit {
       if (currentRoute === '/' || currentRoute === '/login' || currentRoute === '/signup') {
         // Only redirect if user is logged in and on login/signup pages
         if (user && (currentRoute === '/login' || currentRoute === '/signup')) {
+          console.log('🧭 User logged in from login/signup page, redirecting...');
           this.navigateBasedOnRole(user);
         }
         return;
@@ -45,9 +46,11 @@ export class AppComponent implements OnInit {
       
       // If user is logged in, navigate to appropriate dashboard
       if (user) {
+        console.log('🧭 User is logged in, checking if navigation is needed...');
         this.navigateBasedOnRole(user);
       } else {
         // User is not logged in, redirect to landing page
+        console.log('🧭 User not logged in, redirecting to landing page');
         this.router.navigate(['/']);
       }
     });
@@ -56,15 +59,27 @@ export class AppComponent implements OnInit {
   private navigateBasedOnRole(user: any): void {
     console.log('🧭 Navigating based on role:', user.role);
     
+    const currentRoute = this.router.url;
+    let targetRoute = '';
+    
     if (user.role === 'admin') {
-      this.router.navigate(['/admin-dashboard']);
+      targetRoute = '/admin-dashboard';
     } else if (user.role === 'vendor') {
-      this.router.navigate(['/vendor-dashboard']);
+      targetRoute = '/vendor-dashboard';
     } else if (user.role === 'client') {
-      this.router.navigate(['/client-dashboard']);
+      targetRoute = '/client-dashboard';
     } else {
       console.warn('⚠️ Unknown user role:', user.role);
       this.router.navigate(['/']);
+      return;
+    }
+    
+    // Only navigate if we're not already on the target route
+    if (currentRoute !== targetRoute) {
+      console.log('🧭 Navigating from', currentRoute, 'to', targetRoute);
+      this.router.navigate([targetRoute]);
+    } else {
+      console.log('🧭 Already on correct route:', currentRoute);
     }
   }
 }

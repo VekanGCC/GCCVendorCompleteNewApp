@@ -78,8 +78,8 @@ export class AuthService {
         
         console.log('✅ Login successful for:', response.user.name, response.user.role);
         
-        // Navigate based on user role - DO NOT navigate here, let the app component handle it
-        // The app component will handle navigation based on the user state change
+        // Don't navigate here - let the app component handle navigation
+        // The app component will detect the user state change and navigate appropriately
         
         this.isLoadingSubject.next(false);
         return true;
