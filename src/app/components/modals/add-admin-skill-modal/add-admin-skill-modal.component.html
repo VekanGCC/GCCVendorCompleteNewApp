@@ -5,7 +5,7 @@
       <button
         (click)="onClose()"
         class="text-gray-400 hover:text-gray-600 transition-colors">
-        <i-feather name="x" class="w-6 h-6"></i-feather>
+        <lucide-icon name="x" class="w-6 h-6"></lucide-icon>
       </button>
     </div>
 
@@ -67,14 +67,14 @@
 
       <div *ngIf="error" class="p-4 bg-red-50 border border-red-200 rounded-lg">
         <div class="flex items-center">
-          <i-feather name="alert-triangle" class="w-5 h-5 text-red-600 mr-2"></i-feather>
+          <lucide-icon name="alert-triangle" class="w-5 h-5 text-red-600 mr-2"></lucide-icon>
           <span class="text-red-800">{{error}}</span>
         </div>
       </div>
 
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div class="flex">
-          <i-feather name="info" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5"></i-feather>
+          <lucide-icon name="info" class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5"></lucide-icon>
           <div class="text-sm text-blue-800">
             <p class="font-medium mb-1">Admin Skill Management</p>
             <p>Skills added here will be available for vendors and clients to select when adding resources or posting requirements. Only active skills will appear in dropdown menus.</p>
@@ -93,7 +93,7 @@
           type="submit"
           [disabled]="!skillForm.valid || isLoading"
           class="px-6 py-2 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-lg hover:from-red-700 hover:to-pink-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          <i-feather *ngIf="isLoading" name="loader" class="w-4 h-4 animate-spin mr-2 inline"></i-feather>
+          <lucide-icon *ngIf="isLoading" name="loader" class="w-4 h-4 animate-spin mr-2 inline"></lucide-icon>
           {{isLoading ? 'Adding...' : 'Add Skill'}}
         </button>
       </div>

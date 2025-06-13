@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { LayoutComponent } from '../layout/layout.component';
 import { AddAdminSkillModalComponent } from '../modals/add-admin-skill-modal/add-admin-skill-modal.component';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
@@ -22,7 +21,6 @@ import { Application } from '../../models/application.model';
     CommonModule, 
     FormsModule,
     LucideAngularModule, 
-    LayoutComponent,
     AddAdminSkillModalComponent
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -161,115 +159,6 @@ export class AdminDashboardComponent implements OnInit {
     this.activeTab = tab;
   }
 
-  // Approval Management
-  openApprovalModal(approval: PendingApproval): void {
-    this.selectedApproval = approval;
-    this.showApprovalModal = true;
-  }
-
-  closeApprovalModal(): void {
-    this.showApprovalModal = false;
-    this.selectedApproval = null;
-  }
-
-  openRejectModal(approval: PendingApproval): void {
-    this.selectedApproval = approval;
-    this.showRejectModal = true;
-    this.rejectNotes = '';
-  }
-
-  closeRejectModal(): void {
-    this.showRejectModal = false;
-    this.selectedApproval = null;
-    this.rejectNotes = '';
-  }
-
-  async approveEntity(approval: PendingApproval): Promise<void> {
-    try {
-      await this.adminService.approveEntity(approval.id);
-      this.closeApprovalModal();
-    } catch (error) {
-      console.error('Error approving entity:', error);
-    }
-  }
-
-  async rejectEntity(): Promise<void> {
-    if (!this.selectedApproval || !this.rejectNotes.trim()) return;
-
-    try {
-      await this.adminService.rejectEntity(this.selectedApproval.id, this.rejectNotes);
-      this.closeRejectModal();
-    } catch (error) {
-      console.error('Error rejecting entity:', error);
-    }
-  }
-
-  // Vendor Skill Approval Management
-  openSkillApprovalModal(skill: VendorSkill): void {
-    this.selectedVendorSkill = skill;
-    this.showSkillApprovalModal = true;
-  }
-
-  closeSkillApprovalModal(): void {
-    this.showSkillApprovalModal = false;
-    this.selectedVendorSkill = null;
-  }
-
-  openSkillRejectModal(skill: VendorSkill): void {
-    this.selectedVendorSkill = skill;
-    this.showSkillRejectModal = true;
-    this.skillRejectNotes = '';
-  }
-
-  closeSkillRejectModal(): void {
-    this.showSkillRejectModal = false;
-    this.selectedVendorSkill = null;
-    this.skillRejectNotes = '';
-  }
-
-  async approveVendorSkill(skill: VendorSkill): Promise<void> {
-    try {
-      await this.vendorManagementService.updateSkillStatus(skill.id, 'approved', 'Skill approved by admin');
-      this.closeSkillApprovalModal();
-    } catch (error) {
-      console.error('Error approving vendor skill:', error);
-    }
-  }
-
-  async rejectVendorSkill(): Promise<void> {
-    if (!this.selectedVendorSkill || !this.skillRejectNotes.trim()) return;
-
-    try {
-      await this.vendorManagementService.updateSkillStatus(
-        this.selectedVendorSkill.id, 
-        'rejected', 
-        this.skillRejectNotes
-      );
-      this.closeSkillRejectModal();
-    } catch (error) {
-      console.error('Error rejecting vendor skill:', error);
-    }
-  }
-
-  // Skill Management
-  async toggleSkillStatus(skill: AdminSkill): Promise<void> {
-    try {
-      await this.adminService.updateAdminSkill(skill.id, { isActive: !skill.isActive });
-    } catch (error) {
-      console.error('Error toggling skill status:', error);
-    }
-  }
-
-  async deleteSkill(skillId: string): Promise<void> {
-    if (confirm('Are you sure you want to delete this skill? This action cannot be undone.')) {
-      try {
-        await this.adminService.deleteAdminSkill(skillId);
-      } catch (error) {
-        console.error('Error deleting skill:', error);
-      }
-    }
-  }
-
   // Utility Methods
   getApprovalTypeIcon(type: string): string {
     const icons: { [key: string]: string } = {
@@ -298,65 +187,6 @@ export class AdminDashboardComponent implements OnInit {
     return colors[status] || 'text-gray-800 bg-gray-100';
   }
 
-  getTransactionTypeIcon(type: string): string {
-    const icons: { [key: string]: string } = {
-      application: 'trending-up',
-      requirement: 'briefcase',
-      resource: 'users',
-      user_registration: 'user-plus'
-    };
-    return icons[type] || 'activity';
-  }
-
-  formatTransactionType(type: string): string {
-    return type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-  }
-
-  getFilteredApprovals(): PendingApproval[] {
-    if (this.approvalFilter === 'all') {
-      return this.pendingApprovals;
-    }
-    return this.pendingApprovals.filter(approval => approval.type === this.approvalFilter);
-  }
-
-  getFilteredTransactions(): TransactionData[] {
-    if (this.transactionFilter === 'all') {
-      return this.transactions;
-    }
-    return this.transactions.filter(transaction => transaction.type === this.transactionFilter);
-  }
-
-  getFilteredSkills(): AdminSkill[] {
-    if (this.skillFilter === 'all') {
-      return this.adminSkills;
-    }
-    return this.adminSkills.filter(skill => skill.category === this.skillFilter);
-  }
-
-  getFilteredVendorSkills(): VendorSkill[] {
-    if (this.skillApprovalFilter === 'all') {
-      return this.vendorSkills;
-    }
-    return this.vendorSkills.filter(skill => skill.status === this.skillApprovalFilter);
-  }
-
-  getPaginatedItems<T>(items: T[]): T[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return items.slice(startIndex, startIndex + this.itemsPerPage);
-  }
-
-  getTotalPages<T>(items: T[]): number {
-    return Math.ceil(items.length / this.itemsPerPage);
-  }
-
-  changePage(page: number): void {
-    this.currentPage = page;
-  }
-
-  getSkillCategories(): string[] {
-    return this.adminService.getSkillCategories();
-  }
-
   getProficiencyClass(level: string): string {
     switch (level) {
       case 'expert':
@@ -368,47 +198,6 @@ export class AdminDashboardComponent implements OnInit {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  }
-
-  getVendorName(vendorId: string): string {
-    const user = this.allUsers.find(u => u.id === vendorId);
-    return user ? user.company : 'Unknown Vendor';
-  }
-
-  // Helper methods for user management
-  getUserResourceCount(user: User): number {
-    return this.allResources.filter(r => r.vendorId === user.id).length;
-  }
-
-  getUserRequirementCount(user: User): number {
-    return this.allRequirements.filter(r => r.clientId === user.id).length;
-  }
-
-  getUserVendorApplicationCount(user: User): number {
-    return this.allApplications.filter(a => a.vendorId === user.id).length;
-  }
-
-  getUserClientApplicationCount(user: User): number {
-    return this.allApplications.filter(a => a.clientId === user.id).length;
-  }
-
-  // Stats calculations
-  getGrowthPercentage(current: number, previous: number): number {
-    if (previous === 0) return 0;
-    return ((current - previous) / previous) * 100;
-  }
-
-  isGrowthPositive(growth: number): boolean {
-    return growth > 0;
-  }
-
-  // Check if reject notes are valid
-  isRejectNotesValid(): boolean {
-    return this.rejectNotes.trim().length > 0;
-  }
-
-  isSkillRejectNotesValid(): boolean {
-    return this.skillRejectNotes.trim().length > 0;
   }
 
   // Helper method to get pending vendor skills for template
