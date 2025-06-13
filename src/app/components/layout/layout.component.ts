@@ -26,25 +26,23 @@ import { AuthService } from '../../services/auth.service';
                 <lucide-icon name="bell" class="w-5 h-5"></lucide-icon>
               </button>
               
-              @if (authService.user$ | async; as user) {
-                <div class="flex items-center space-x-3">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
-                      <lucide-icon name="user" class="w-4 h-4 text-white"></lucide-icon>
-                    </div>
-                    <div class="hidden sm:block">
-                      <p class="text-sm font-medium text-gray-700">{{user.name}}</p>
-                      <p class="text-xs text-gray-500 capitalize">{{user.role}} • {{user.company}}</p>
-                    </div>
+              <div *ngIf="authService.user$ | async as user" class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                    <lucide-icon name="user" class="w-4 h-4 text-white"></lucide-icon>
                   </div>
-                  
-                  <button
-                    (click)="logout()"
-                    class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                    <lucide-icon name="log-out" class="w-5 h-5"></lucide-icon>
-                  </button>
+                  <div class="hidden sm:block">
+                    <p class="text-sm font-medium text-gray-700">{{user.name}}</p>
+                    <p class="text-xs text-gray-500 capitalize">{{user.role}} • {{user.company}}</p>
+                  </div>
                 </div>
-              }
+                
+                <button
+                  (click)="logout()"
+                  class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                  <lucide-icon name="log-out" class="w-5 h-5"></lucide-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div>
