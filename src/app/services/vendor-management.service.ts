@@ -33,22 +33,32 @@ export class VendorManagementService {
   private async loadVendorUsers(): Promise<void> {
     try {
       const response = await this.apiService.getVendorUsers().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
+        console.log('✅ Loaded vendor users:', response.data.length);
         this.vendorUsersSubject.next(response.data);
+      } else {
+        console.log('⚠️ No vendor users data received');
+        this.vendorUsersSubject.next([]);
       }
     } catch (error) {
       console.error('Error loading vendor users:', error);
+      this.vendorUsersSubject.next([]);
     }
   }
 
   private async loadVendorSkills(): Promise<void> {
     try {
       const response = await this.apiService.getVendorSkills().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
+        console.log('✅ Loaded vendor skills:', response.data.length);
         this.vendorSkillsSubject.next(response.data);
+      } else {
+        console.log('⚠️ No vendor skills data received');
+        this.vendorSkillsSubject.next([]);
       }
     } catch (error) {
       console.error('Error loading vendor skills:', error);
+      this.vendorSkillsSubject.next([]);
     }
   }
 

@@ -92,32 +92,40 @@ export class VendorDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🔄 VendorDashboard: Initializing...');
+    
     this.authService.user$.subscribe(user => {
+      console.log('👤 VendorDashboard: User updated:', user?.name, user?.role);
       this.user = user;
       this.updateData();
     });
 
     this.appService.resources$.subscribe(resources => {
+      console.log('📦 VendorDashboard: Resources updated:', resources.length);
       this.resources = resources;
       this.updateData();
     });
 
     this.appService.requirements$.subscribe(requirements => {
+      console.log('📋 VendorDashboard: Requirements updated:', requirements.length);
       this.requirements = requirements;
       this.updateData();
     });
 
     this.appService.applications$.subscribe(applications => {
+      console.log('📊 VendorDashboard: Applications updated:', applications.length);
       this.applications = applications;
       this.updateData();
     });
 
     this.vendorManagementService.vendorUsers$.subscribe(users => {
+      console.log('👥 VendorDashboard: Vendor users updated:', users.length);
       this.vendorUsers = users;
       this.updateData();
     });
 
     this.vendorManagementService.vendorSkills$.subscribe(skills => {
+      console.log('🎯 VendorDashboard: Vendor skills updated:', skills.length);
       this.vendorSkills = skills;
       this.updateData();
     });
@@ -133,19 +141,32 @@ export class VendorDashboardComponent implements OnInit {
 
   private updateData(): void {
     if (this.user) {
+      console.log('🔄 VendorDashboard: Updating data for user:', this.user.name);
+      
       this.vendorResources = this.resources.filter(r => r.vendorId === this.user!.id);
       this.vendorApplications = this.applications.filter(a => a.vendorId === this.user!.id);
       this.organizationUsers = this.vendorUsers.filter(u => u.vendorId === this.user!.id);
       this.organizationSkills = this.vendorSkills.filter(s => s.vendorId === this.user!.id);
       
+      console.log('📊 VendorDashboard: Filtered data:', {
+        vendorResources: this.vendorResources.length,
+        vendorApplications: this.vendorApplications.length,
+        organizationUsers: this.organizationUsers.length,
+        organizationSkills: this.organizationSkills.length,
+        totalRequirements: this.requirements.length
+      });
+      
       this.stats[0].value = this.vendorResources.length;
       this.stats[1].value = this.requirements.length;
       this.stats[2].value = this.vendorApplications.filter(a => !['rejected', 'onboarded'].includes(a.status)).length;
       this.stats[3].value = this.vendorApplications.filter(a => a.status === 'onboarded').length;
+    } else {
+      console.log('⚠️ VendorDashboard: No user found');
     }
   }
 
   setActiveTab(tabId: string): void {
+    console.log('🔄 VendorDashboard: Setting active tab to:', tabId);
     this.activeTab = tabId as 'overview' | 'resources' | 'requirements' | 'applications' | 'user-management' | 'skill-management';
     this.showVendorManagementDropdown = false;
   }

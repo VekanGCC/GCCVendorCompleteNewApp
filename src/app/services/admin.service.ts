@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AdminUser, PendingApproval, AdminSkill, PlatformStats, TransactionData } from '../models/admin.model';
 import { ApiService } from './api.service';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -38,44 +37,56 @@ export class AdminService {
   private async loadPendingApprovals(): Promise<void> {
     try {
       const response = await this.apiService.getPendingApprovals().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
         this.pendingApprovalsSubject.next(response.data);
+      } else {
+        this.pendingApprovalsSubject.next([]);
       }
     } catch (error) {
       console.error('Error loading pending approvals:', error);
+      this.pendingApprovalsSubject.next([]);
     }
   }
 
   private async loadAdminSkills(): Promise<void> {
     try {
       const response = await this.apiService.getAdminSkills().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
         this.adminSkillsSubject.next(response.data);
+      } else {
+        this.adminSkillsSubject.next([]);
       }
     } catch (error) {
       console.error('Error loading admin skills:', error);
+      this.adminSkillsSubject.next([]);
     }
   }
 
   private async loadPlatformStats(): Promise<void> {
     try {
       const response = await this.apiService.getPlatformStats().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
         this.platformStatsSubject.next(response.data);
+      } else {
+        this.platformStatsSubject.next(null);
       }
     } catch (error) {
       console.error('Error loading platform stats:', error);
+      this.platformStatsSubject.next(null);
     }
   }
 
   private async loadTransactions(): Promise<void> {
     try {
       const response = await this.apiService.getAllTransactions().toPromise();
-      if (response.success) {
+      if (response && response.success && response.data) {
         this.transactionsSubject.next(response.data);
+      } else {
+        this.transactionsSubject.next([]);
       }
     } catch (error) {
       console.error('Error loading transactions:', error);
+      this.transactionsSubject.next([]);
     }
   }
 
