@@ -88,7 +88,7 @@ export class ApplicationsViewComponent implements OnInit {
       selected: 'text-green-800 bg-green-100',
       onboarded: 'text-teal-800 bg-teal-100'
     };
-    return colors[status] || colors.pending;
+    return colors[status] || colors['pending'];
   }
 
   getStatusIcon(status: string): string {

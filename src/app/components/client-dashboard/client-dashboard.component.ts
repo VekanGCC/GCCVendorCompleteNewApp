@@ -244,7 +244,7 @@ export class ClientDashboardComponent implements OnInit {
       onboarded: { color: 'bg-teal-100 text-teal-800', icon: 'check-circle' }
     };
     
-    return statusConfig[status] || statusConfig.pending;
+    return statusConfig[status] || statusConfig['pending'];
   }
 
   handleApplyResource(resourceId: string): void {
