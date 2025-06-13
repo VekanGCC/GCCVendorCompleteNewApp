@@ -26,5 +26,12 @@
     "name": "Emily Davis",
     "role": "client",
     "company": "StartupXYZ"
+  },
+  {
+    "id": "admin",
+    "email": "admin@talentbridge.com",
+    "name": "Admin User",
+    "role": "admin",
+    "company": "TalentBridge"
   }
 ]
