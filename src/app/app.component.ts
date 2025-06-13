@@ -28,25 +28,43 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Subscribe to user changes and handle navigation
     this.authService.user$.subscribe(user => {
       const currentRoute = this.router.url;
       
+      console.log('🔄 User state changed:', user?.name, user?.role, 'Current route:', currentRoute);
+      
       // Don't redirect if user is on landing, login, or signup pages
       if (currentRoute === '/' || currentRoute === '/login' || currentRoute === '/signup') {
+        // Only redirect if user is logged in and on login/signup pages
+        if (user && (currentRoute === '/login' || currentRoute === '/signup')) {
+          this.navigateBasedOnRole(user);
+        }
         return;
       }
       
+      // If user is logged in, navigate to appropriate dashboard
       if (user) {
-        if (user.role === 'admin') {
-          this.router.navigate(['/admin-dashboard']);
-        } else if (user.role === 'vendor') {
-          this.router.navigate(['/vendor-dashboard']);
-        } else if (user.role === 'client') {
-          this.router.navigate(['/client-dashboard']);
-        }
+        this.navigateBasedOnRole(user);
       } else {
+        // User is not logged in, redirect to landing page
         this.router.navigate(['/']);
       }
     });
+  }
+
+  private navigateBasedOnRole(user: any): void {
+    console.log('🧭 Navigating based on role:', user.role);
+    
+    if (user.role === 'admin') {
+      this.router.navigate(['/admin-dashboard']);
+    } else if (user.role === 'vendor') {
+      this.router.navigate(['/vendor-dashboard']);
+    } else if (user.role === 'client') {
+      this.router.navigate(['/client-dashboard']);
+    } else {
+      console.warn('⚠️ Unknown user role:', user.role);
+      this.router.navigate(['/']);
+    }
   }
 }

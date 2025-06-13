@@ -78,14 +78,8 @@ export class AuthService {
         
         console.log('✅ Login successful for:', response.user.name, response.user.role);
         
-        // Navigate based on user role
-        if (response.user.role === 'admin') {
-          this.router.navigate(['/admin-dashboard']);
-        } else if (response.user.role === 'vendor') {
-          this.router.navigate(['/vendor-dashboard']);
-        } else if (response.user.role === 'client') {
-          this.router.navigate(['/client-dashboard']);
-        }
+        // Navigate based on user role - DO NOT navigate here, let the app component handle it
+        // The app component will handle navigation based on the user state change
         
         this.isLoadingSubject.next(false);
         return true;

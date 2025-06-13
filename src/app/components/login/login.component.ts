@@ -87,7 +87,8 @@ export class LoginComponent {
         if (!success) {
           this.error = 'Invalid email or password. Please try again.';
         }
-        // If successful, the AuthService will handle navigation
+        // Don't navigate here - let the app component handle navigation
+        // based on the user state change from AuthService
       } catch (error) {
         console.error('Login error:', error);
         this.error = 'An error occurred during login. Please try again.';
@@ -109,6 +110,7 @@ export class LoginComponent {
       if (!success) {
         this.error = 'Demo account login failed. Please try again.';
       }
+      // Don't navigate here - let the app component handle navigation
     } catch (error) {
       console.error('Demo login error:', error);
       this.error = 'An error occurred during demo login. Please try again.';
