@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
+import { LayoutComponent } from '../layout/layout.component';
+import { ApplicationsViewComponent } from '../applications-view/applications-view.component';
+import { RequirementModalComponent } from '../modals/requirement-modal/requirement-modal.component';
+import { ApplyResourceModalComponent } from '../modals/apply-resource-modal/apply-resource-modal.component';
 import { AuthService } from '../../services/auth.service';
 import { AppService } from '../../services/app.service';
 import { Resource } from '../../models/resource.model';
@@ -8,6 +15,16 @@ import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-client-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    LucideAngularModule, 
+    LayoutComponent,
+    ApplicationsViewComponent,
+    RequirementModalComponent,
+    ApplyResourceModalComponent
+  ],
   templateUrl: './client-dashboard.component.html',
   styleUrls: ['./client-dashboard.component.css']
 })

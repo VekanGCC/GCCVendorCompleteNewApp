@@ -1,4 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../services/auth.service';
 import { AppService } from '../../../services/app.service';
 import { Resource } from '../../../models/resource.model';
@@ -6,6 +8,8 @@ import { Requirement } from '../../../models/requirement.model';
 
 @Component({
   selector: 'app-apply-resource-modal',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './apply-resource-modal.component.html',
   styleUrls: ['./apply-resource-modal.component.css']
 })

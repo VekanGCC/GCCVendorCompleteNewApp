@@ -1,10 +1,14 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../services/auth.service';
 import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-add-admin-skill-modal',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './add-admin-skill-modal.component.html',
   styleUrls: ['./add-admin-skill-modal.component.css']
 })

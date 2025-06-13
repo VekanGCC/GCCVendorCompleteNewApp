@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 import { AppService } from '../../services/app.service';
 import { Resource } from '../../models/resource.model';
@@ -8,6 +10,8 @@ import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-applications-view',
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './applications-view.component.html',
   styleUrls: ['./applications-view.component.css']
 })

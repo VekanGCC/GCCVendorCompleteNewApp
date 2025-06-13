@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
+import { LayoutComponent } from '../layout/layout.component';
+import { AddAdminSkillModalComponent } from '../modals/add-admin-skill-modal/add-admin-skill-modal.component';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { AppService } from '../../services/app.service';
@@ -12,6 +17,14 @@ import { Application } from '../../models/application.model';
 
 @Component({
   selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    LucideAngularModule, 
+    LayoutComponent,
+    AddAdminSkillModalComponent
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })

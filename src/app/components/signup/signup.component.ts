@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 import { VendorRegistrationService } from '../../services/vendor-registration.service';
 import { ClientRegistrationService } from '../../services/client-registration.service';
 import { VendorRegistration } from '../../models/vendor-registration.model';
@@ -8,6 +10,8 @@ import { ClientRegistration } from '../../models/client-registration.model';
 
 @Component({
   selector: 'app-signup',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })

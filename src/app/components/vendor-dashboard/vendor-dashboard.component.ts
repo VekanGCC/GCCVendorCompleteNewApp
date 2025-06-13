@@ -1,4 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
+import { LayoutComponent } from '../layout/layout.component';
+import { ApplicationsViewComponent } from '../applications-view/applications-view.component';
+import { ResourceModalComponent } from '../modals/resource-modal/resource-modal.component';
+import { ApplyResourceModalComponent } from '../modals/apply-resource-modal/apply-resource-modal.component';
+import { AddUserModalComponent } from '../modals/add-user-modal/add-user-modal.component';
+import { AddSkillModalComponent } from '../modals/add-skill-modal/add-skill-modal.component';
 import { AuthService } from '../../services/auth.service';
 import { AppService } from '../../services/app.service';
 import { VendorManagementService } from '../../services/vendor-management.service';
@@ -11,6 +19,17 @@ import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-vendor-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    LucideAngularModule, 
+    LayoutComponent,
+    ApplicationsViewComponent,
+    ResourceModalComponent,
+    ApplyResourceModalComponent,
+    AddUserModalComponent,
+    AddSkillModalComponent
+  ],
   templateUrl: './vendor-dashboard.component.html',
   styleUrls: ['./vendor-dashboard.component.css']
 })

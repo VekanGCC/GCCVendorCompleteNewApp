@@ -1,10 +1,60 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
+  template: `
+    <div class="min-h-screen bg-gray-50">
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+              <div class="flex items-center">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-2">
+                  <lucide-icon name="home" class="w-6 h-6 text-white"></lucide-icon>
+                </div>
+                <span class="ml-3 text-xl font-bold text-gray-900">TalentBridge</span>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <button class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                <lucide-icon name="bell" class="w-5 h-5"></lucide-icon>
+              </button>
+              
+              @if (authService.user$ | async; as user) {
+                <div class="flex items-center space-x-3">
+                  <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
+                      <lucide-icon name="user" class="w-4 h-4 text-white"></lucide-icon>
+                    </div>
+                    <div class="hidden sm:block">
+                      <p class="text-sm font-medium text-gray-700">{{user.name}}</p>
+                      <p class="text-xs text-gray-500 capitalize">{{user.role}} • {{user.company}}</p>
+                    </div>
+                  </div>
+                  
+                  <button
+                    (click)="logout()"
+                    class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                    <lucide-icon name="log-out" class="w-5 h-5"></lucide-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ng-content></ng-content>
+      </main>
+    </div>
+  `
 })
 export class LayoutComponent {
   

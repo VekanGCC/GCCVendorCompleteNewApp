@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../services/auth.service';
 import { AppService } from '../../../services/app.service';
 import { AdminService } from '../../../services/admin.service';
@@ -7,6 +9,8 @@ import { AdminSkill } from '../../../models/admin.model';
 
 @Component({
   selector: 'app-resource-modal',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './resource-modal.component.html',
   styleUrls: ['./resource-modal.component.css']
 })

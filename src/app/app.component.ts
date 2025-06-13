@@ -9,13 +9,17 @@ import { LucideAngularModule } from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, RouterOutlet, LucideAngularModule],
   template: `
-    <div *ngIf="authService.isLoading$ | async" class="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600">
-        <lucide-icon name="loader" class="w-8 h-8"></lucide-icon>
+    @if (authService.isLoading$ | async) {
+      <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600">
+          <lucide-icon name="loader" class="w-8 h-8"></lucide-icon>
+        </div>
       </div>
-    </div>
+    }
     
-    <router-outlet *ngIf="!(authService.isLoading$ | async)"></router-outlet>
+    @if (!(authService.isLoading$ | async)) {
+      <router-outlet></router-outlet>
+    }
   `
 })
 export class AppComponent implements OnInit {
