@@ -37,8 +37,9 @@ export class AppService {
   private async loadResources(): Promise<void> {
     try {
       const response = await this.apiService.getResources().toPromise();
-      if (response.success) {
-        this.resourcesSubject.next(response.data);
+      if (response.success && response.data) {
+        const filteredResources = response.data.filter((item: any) => item != null);
+        this.resourcesSubject.next(filteredResources);
       }
     } catch (error) {
       console.error('Error loading resources:', error);
@@ -48,8 +49,9 @@ export class AppService {
   private async loadRequirements(): Promise<void> {
     try {
       const response = await this.apiService.getRequirements().toPromise();
-      if (response.success) {
-        this.requirementsSubject.next(response.data);
+      if (response.success && response.data) {
+        const filteredRequirements = response.data.filter((item: any) => item != null);
+        this.requirementsSubject.next(filteredRequirements);
       }
     } catch (error) {
       console.error('Error loading requirements:', error);
@@ -59,8 +61,9 @@ export class AppService {
   private async loadApplications(): Promise<void> {
     try {
       const response = await this.apiService.getApplications().toPromise();
-      if (response.success) {
-        this.applicationsSubject.next(response.data);
+      if (response.success && response.data) {
+        const filteredApplications = response.data.filter((item: any) => item != null);
+        this.applicationsSubject.next(filteredApplications);
       }
     } catch (error) {
       console.error('Error loading applications:', error);
