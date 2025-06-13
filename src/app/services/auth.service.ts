@@ -31,6 +31,9 @@ export class AuthService {
         const user = JSON.parse(storedUser);
         this.userSubject.next(user);
         console.log('✅ Restored user session:', user.name, user.role);
+        
+        // Verify token validity with backend
+        this.verifyToken(storedToken);
       } catch (error) {
         console.error('❌ Error parsing stored user:', error);
         this.clearStoredAuth();
@@ -44,6 +47,21 @@ export class AuthService {
     localStorage.removeItem('authToken');
   }
 
+  private verifyToken(token: string): void {
+    this.apiService.verifyToken(token).subscribe(
+      response => {
+        if (!response.success) {
+          console.log('❌ Token verification failed, logging out');
+          this.logout();
+        }
+      },
+      error => {
+        console.error('❌ Token verification error:', error);
+        this.logout();
+      }
+    );
+  }
+
   async login(email: string, password: string): Promise<boolean> {
     this.isLoadingSubject.next(true);
     console.log('🔐 Attempting login for:', email);
@@ -52,7 +70,7 @@ export class AuthService {
       const response = await this.apiService.login({ email, password }).toPromise();
       console.log('📡 Login response:', response);
       
-      if (response && response.success && response.user) {
+      if (response && response.success && response.user && response.token) {
         // Store user and token
         this.userSubject.next(response.user);
         localStorage.setItem('user', JSON.stringify(response.user));
@@ -109,5 +127,9 @@ export class AuthService {
 
   get isAuthenticated(): boolean {
     return this.userSubject.value !== null;
+  }
+
+  getAuthToken(): string {
+    return localStorage.getItem('authToken') || '';
   }
 }

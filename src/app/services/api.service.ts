@@ -11,17 +11,19 @@ export class ApiService {
   private baseUrl = environment.apiUrl;
   private useMockData = environment.useMockData;
 
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.getAuthToken()}`
-    })
-  };
-
   constructor(private http: HttpClient) {}
 
   private getAuthToken(): string {
     return localStorage.getItem('authToken') || '';
+  }
+
+  private getHttpOptions(): { headers: HttpHeaders } {
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.getAuthToken()}`
+      })
+    };
   }
 
   private simulateApiCall<T>(endpoint: string, method: string = 'GET', data?: any, delay_ms: number = 500): Observable<any> {
@@ -42,22 +44,23 @@ export class ApiService {
     } else {
       // Real API call
       let request: Observable<any>;
+      const httpOptions = this.getHttpOptions();
       
       switch (method) {
         case 'POST':
-          request = this.http.post(`${this.baseUrl}/${endpoint}`, data, this.httpOptions);
+          request = this.http.post(`${this.baseUrl}/${endpoint}`, data, httpOptions);
           break;
         case 'PUT':
-          request = this.http.put(`${this.baseUrl}/${endpoint}`, data, this.httpOptions);
+          request = this.http.put(`${this.baseUrl}/${endpoint}`, data, httpOptions);
           break;
         case 'PATCH':
-          request = this.http.patch(`${this.baseUrl}/${endpoint}`, data, this.httpOptions);
+          request = this.http.patch(`${this.baseUrl}/${endpoint}`, data, httpOptions);
           break;
         case 'DELETE':
-          request = this.http.delete(`${this.baseUrl}/${endpoint}`, this.httpOptions);
+          request = this.http.delete(`${this.baseUrl}/${endpoint}`, httpOptions);
           break;
         default:
-          request = this.http.get(`${this.baseUrl}/${endpoint}`, this.httpOptions);
+          request = this.http.get(`${this.baseUrl}/${endpoint}`, httpOptions);
       }
       
       return request.pipe(
@@ -102,10 +105,35 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/auth/login`, credentials, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/auth/login`, credentials, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      }).pipe(
         catchError(error => {
           console.error('❌ API: Login error:', error);
           return of({ success: false, message: 'Login error' });
+        })
+      );
+    }
+  }
+
+  verifyToken(token: string): Observable<any> {
+    console.log('🔒 API: Verifying token');
+    
+    if (this.useMockData) {
+      // For mock data, we'll simulate token verification
+      // In a real app, this would validate the token with the backend
+      return of({ success: true }).pipe(delay(300));
+    } else {
+      return this.http.get(`${this.baseUrl}/auth/verify`, {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        })
+      }).pipe(
+        catchError(error => {
+          console.error('❌ API: Token verification error:', error);
+          return of({ success: false, message: 'Token verification error' });
         })
       );
     }
@@ -117,7 +145,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true }).pipe(delay(300));
     } else {
-      return this.http.post(`${this.baseUrl}/auth/logout`, {}, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/auth/logout`, {}, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Logout error:', error);
           return of({ success: false, message: 'Logout error' });
@@ -159,7 +187,7 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/resources`, resource, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/resources`, resource, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create resource error:', error);
           return of({ success: false, message: 'Error creating resource' });
@@ -174,7 +202,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true, data: { ...resource, id } }).pipe(delay(500));
     } else {
-      return this.http.put(`${this.baseUrl}/resources/${id}`, resource, this.httpOptions).pipe(
+      return this.http.put(`${this.baseUrl}/resources/${id}`, resource, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update resource error:', error);
           return of({ success: false, message: 'Error updating resource' });
@@ -189,7 +217,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true }).pipe(delay(500));
     } else {
-      return this.http.delete(`${this.baseUrl}/resources/${id}`, this.httpOptions).pipe(
+      return this.http.delete(`${this.baseUrl}/resources/${id}`, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Delete resource error:', error);
           return of({ success: false, message: 'Error deleting resource' });
@@ -225,7 +253,7 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/requirements`, requirement, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/requirements`, requirement, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create requirement error:', error);
           return of({ success: false, message: 'Error creating requirement' });
@@ -240,7 +268,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true, data: { ...requirement, id } }).pipe(delay(500));
     } else {
-      return this.http.put(`${this.baseUrl}/requirements/${id}`, requirement, this.httpOptions).pipe(
+      return this.http.put(`${this.baseUrl}/requirements/${id}`, requirement, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update requirement error:', error);
           return of({ success: false, message: 'Error updating requirement' });
@@ -255,7 +283,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true, data: { id, status } }).pipe(delay(500));
     } else {
-      return this.http.patch(`${this.baseUrl}/requirements/${id}/status`, { status }, this.httpOptions).pipe(
+      return this.http.patch(`${this.baseUrl}/requirements/${id}/status`, { status }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update requirement status error:', error);
           return of({ success: false, message: 'Error updating requirement status' });
@@ -292,7 +320,7 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/applications`, application, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/applications`, application, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create application error:', error);
           return of({ success: false, message: 'Error creating application' });
@@ -315,7 +343,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.patch(`${this.baseUrl}/applications/${id}/status`, { status, notes }, this.httpOptions).pipe(
+      return this.http.patch(`${this.baseUrl}/applications/${id}/status`, { status, notes }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update application status error:', error);
           return of({ success: false, message: 'Error updating application status' });
@@ -351,7 +379,7 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/vendor-users`, user, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/vendor-users`, user, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create vendor user error:', error);
           return of({ success: false, message: 'Error creating vendor user' });
@@ -366,7 +394,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true, data: { id, status } }).pipe(delay(500));
     } else {
-      return this.http.patch(`${this.baseUrl}/vendor-users/${id}/status`, { status }, this.httpOptions).pipe(
+      return this.http.patch(`${this.baseUrl}/vendor-users/${id}/status`, { status }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update vendor user status error:', error);
           return of({ success: false, message: 'Error updating vendor user status' });
@@ -402,7 +430,7 @@ export class ApiService {
         })
       );
     } else {
-      return this.http.post(`${this.baseUrl}/vendor-skills`, skill, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/vendor-skills`, skill, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create vendor skill error:', error);
           return of({ success: false, message: 'Error creating vendor skill' });
@@ -425,7 +453,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.patch(`${this.baseUrl}/vendor-skills/${id}/status`, { status, reviewNotes }, this.httpOptions).pipe(
+      return this.http.patch(`${this.baseUrl}/vendor-skills/${id}/status`, { status, reviewNotes }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update vendor skill status error:', error);
           return of({ success: false, message: 'Error updating vendor skill status' });
@@ -454,7 +482,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.post(`${this.baseUrl}/admin/approvals/${approvalId}/approve`, { notes }, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/admin/approvals/${approvalId}/approve`, { notes }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Approve entity error:', error);
           return of({ success: false, message: 'Error approving entity' });
@@ -477,7 +505,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.post(`${this.baseUrl}/admin/approvals/${approvalId}/reject`, { notes }, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/admin/approvals/${approvalId}/reject`, { notes }, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Reject entity error:', error);
           return of({ success: false, message: 'Error rejecting entity' });
@@ -505,7 +533,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.post(`${this.baseUrl}/admin/skills`, skill, this.httpOptions).pipe(
+      return this.http.post(`${this.baseUrl}/admin/skills`, skill, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Create admin skill error:', error);
           return of({ success: false, message: 'Error creating admin skill' });
@@ -527,7 +555,7 @@ export class ApiService {
         } 
       }).pipe(delay(500));
     } else {
-      return this.http.put(`${this.baseUrl}/admin/skills/${id}`, updates, this.httpOptions).pipe(
+      return this.http.put(`${this.baseUrl}/admin/skills/${id}`, updates, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Update admin skill error:', error);
           return of({ success: false, message: 'Error updating admin skill' });
@@ -542,7 +570,7 @@ export class ApiService {
     if (this.useMockData) {
       return of({ success: true }).pipe(delay(500));
     } else {
-      return this.http.delete(`${this.baseUrl}/admin/skills/${id}`, this.httpOptions).pipe(
+      return this.http.delete(`${this.baseUrl}/admin/skills/${id}`, this.getHttpOptions()).pipe(
         catchError(error => {
           console.error('❌ API: Delete admin skill error:', error);
           return of({ success: false, message: 'Error deleting admin skill' });
