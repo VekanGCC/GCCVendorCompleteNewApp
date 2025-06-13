@@ -13,7 +13,7 @@
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Demo Accounts</h3>
         <p class="text-sm text-gray-600 mb-4">Click "Use Account" to auto-fill credentials</p>
         <div class="space-y-4">
-          <div *ngFor="let cred of demoCredentials; track cred.email; let i = $index" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div *ngFor="let cred of demoCredentials; trackBy: trackByEmail" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
             <div class="flex items-start justify-between mb-2">
               <div class="flex-1">
                 <div class="flex items-center space-x-2 mb-1">

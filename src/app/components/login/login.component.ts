@@ -71,6 +71,10 @@ export class LoginComponent {
     });
   }
 
+  trackByEmail(index: number, item: any): string {
+    return item.email;
+  }
+
   async onSubmit(): Promise<void> {
     if (this.loginForm.valid) {
       this.error = '';

@@ -46,5 +46,29 @@
     "status": "active",
     "createdAt": "2024-01-08",
     "createdBy": "System"
+  },
+  {
+    "id": "5",
+    "vendorId": "1",
+    "name": "Lisa Anderson",
+    "email": "lisa.anderson@techcorp.com",
+    "role": "manager",
+    "department": "Sales",
+    "phone": "+1 (555) 567-8901",
+    "status": "active",
+    "createdAt": "2024-01-14",
+    "createdBy": "John Smith"
+  },
+  {
+    "id": "6",
+    "vendorId": "3",
+    "name": "Robert Taylor",
+    "email": "robert.taylor@devstudio.com",
+    "role": "user",
+    "department": "Engineering",
+    "phone": "+1 (555) 678-9012",
+    "status": "inactive",
+    "createdAt": "2024-01-16",
+    "createdBy": "Mike Chen"
   }
 ]
