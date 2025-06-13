@@ -1,12 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, LucideAngularModule],
   template: `
     <div *ngIf="authService.isLoading$ | async" class="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600">
+        <lucide-icon name="loader" class="w-8 h-8"></lucide-icon>
+      </div>
     </div>
     
     <router-outlet *ngIf="!(authService.isLoading$ | async)"></router-outlet>
