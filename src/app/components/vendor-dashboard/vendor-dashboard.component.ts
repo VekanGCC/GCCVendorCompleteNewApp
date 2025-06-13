@@ -287,4 +287,17 @@ export class VendorDashboardComponent implements OnInit {
     if (!status) return 'Unknown';
     return status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
+
+  // Track by functions for *ngFor loops
+  trackByTitle(index: number, item: any): any {
+    return item?.title || index;
+  }
+
+  trackById(index: number, item: any): any {
+    return item?.id || index;
+  }
+
+  trackByStatTitle(index: number, item: any): any {
+    return item?.title || index;
+  }
 }
