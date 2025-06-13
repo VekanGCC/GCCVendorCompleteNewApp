@@ -101,32 +101,32 @@ export class VendorDashboardComponent implements OnInit {
     });
 
     this.appService.resources$.subscribe(resources => {
-      console.log('📦 VendorDashboard: Resources updated:', resources.length);
-      this.resources = resources;
+      console.log('📦 VendorDashboard: Resources updated:', resources?.length || 0);
+      this.resources = resources || [];
       this.updateData();
     });
 
     this.appService.requirements$.subscribe(requirements => {
-      console.log('📋 VendorDashboard: Requirements updated:', requirements.length);
-      this.requirements = requirements;
+      console.log('📋 VendorDashboard: Requirements updated:', requirements?.length || 0);
+      this.requirements = requirements || [];
       this.updateData();
     });
 
     this.appService.applications$.subscribe(applications => {
-      console.log('📊 VendorDashboard: Applications updated:', applications.length);
-      this.applications = applications;
+      console.log('📊 VendorDashboard: Applications updated:', applications?.length || 0);
+      this.applications = applications || [];
       this.updateData();
     });
 
     this.vendorManagementService.vendorUsers$.subscribe(users => {
-      console.log('👥 VendorDashboard: Vendor users updated:', users.length);
-      this.vendorUsers = users;
+      console.log('👥 VendorDashboard: Vendor users updated:', users?.length || 0);
+      this.vendorUsers = users || [];
       this.updateData();
     });
 
     this.vendorManagementService.vendorSkills$.subscribe(skills => {
-      console.log('🎯 VendorDashboard: Vendor skills updated:', skills.length);
-      this.vendorSkills = skills;
+      console.log('🎯 VendorDashboard: Vendor skills updated:', skills?.length || 0);
+      this.vendorSkills = skills || [];
       this.updateData();
     });
 
@@ -143,25 +143,32 @@ export class VendorDashboardComponent implements OnInit {
     if (this.user) {
       console.log('🔄 VendorDashboard: Updating data for user:', this.user.name);
       
-      this.vendorResources = this.resources.filter(r => r.vendorId === this.user!.id);
-      this.vendorApplications = this.applications.filter(a => a.vendorId === this.user!.id);
-      this.organizationUsers = this.vendorUsers.filter(u => u.vendorId === this.user!.id);
-      this.organizationSkills = this.vendorSkills.filter(s => s.vendorId === this.user!.id);
+      // Use safe filtering with null checks
+      this.vendorResources = (this.resources || []).filter(r => r && r.vendorId === this.user!.id);
+      this.vendorApplications = (this.applications || []).filter(a => a && a.vendorId === this.user!.id);
+      this.organizationUsers = (this.vendorUsers || []).filter(u => u && u.vendorId === this.user!.id);
+      this.organizationSkills = (this.vendorSkills || []).filter(s => s && s.vendorId === this.user!.id);
       
       console.log('📊 VendorDashboard: Filtered data:', {
         vendorResources: this.vendorResources.length,
         vendorApplications: this.vendorApplications.length,
         organizationUsers: this.organizationUsers.length,
         organizationSkills: this.organizationSkills.length,
-        totalRequirements: this.requirements.length
+        totalRequirements: (this.requirements || []).length
       });
       
+      // Update stats with safe values
       this.stats[0].value = this.vendorResources.length;
-      this.stats[1].value = this.requirements.length;
-      this.stats[2].value = this.vendorApplications.filter(a => !['rejected', 'onboarded'].includes(a.status)).length;
-      this.stats[3].value = this.vendorApplications.filter(a => a.status === 'onboarded').length;
+      this.stats[1].value = (this.requirements || []).length;
+      this.stats[2].value = this.vendorApplications.filter(a => a && !['rejected', 'onboarded'].includes(a.status)).length;
+      this.stats[3].value = this.vendorApplications.filter(a => a && a.status === 'onboarded').length;
     } else {
       console.log('⚠️ VendorDashboard: No user found');
+      // Reset arrays to empty when no user
+      this.vendorResources = [];
+      this.vendorApplications = [];
+      this.organizationUsers = [];
+      this.organizationSkills = [];
     }
   }
 
@@ -176,16 +183,19 @@ export class VendorDashboardComponent implements OnInit {
   }
 
   getResourceName(resourceId: string): string {
-    const resource = this.resources.find(r => r.id === resourceId);
-    return resource ? resource.name : 'Unknown Resource';
+    if (!resourceId) return 'Unknown Resource';
+    const resource = (this.resources || []).find(r => r && r.id === resourceId);
+    return resource?.name || 'Unknown Resource';
   }
 
   getRequirementTitle(requirementId: string): string {
-    const requirement = this.requirements.find(r => r.id === requirementId);
-    return requirement ? requirement.title : 'Unknown Requirement';
+    if (!requirementId) return 'Unknown Requirement';
+    const requirement = (this.requirements || []).find(r => r && r.id === requirementId);
+    return requirement?.title || 'Unknown Requirement';
   }
 
   getFirstThreeSkills(skills: string[]): string[] {
+    if (!skills || !Array.isArray(skills)) return [];
     return skills.slice(0, 3);
   }
 
@@ -195,8 +205,10 @@ export class VendorDashboardComponent implements OnInit {
         return 'bg-green-100 text-green-800';
       case 'engaged':
         return 'bg-blue-100 text-blue-800';
-      default:
+      case 'unavailable':
         return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
@@ -255,6 +267,7 @@ export class VendorDashboardComponent implements OnInit {
   }
 
   handleApplyResources(requirementId: string): void {
+    if (!requirementId) return;
     this.selectedRequirementId = requirementId;
     this.showApplyModal = true;
   }
@@ -265,11 +278,13 @@ export class VendorDashboardComponent implements OnInit {
   }
 
   toggleUserStatus(userId: string, currentStatus: string): void {
+    if (!userId) return;
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     this.vendorManagementService.updateUserStatus(userId, newStatus as VendorUser['status']);
   }
 
   formatStatus(status: string): string {
+    if (!status) return 'Unknown';
     return status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 }
