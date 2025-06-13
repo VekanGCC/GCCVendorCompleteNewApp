@@ -18,20 +18,45 @@
 
     <!-- Navigation Menu -->
     <nav class="flex-1 p-4 space-y-2">
+      <!-- Main Navigation Tabs -->
       <button
-        *ngFor="let tab of [
-          { id: 'overview', label: 'Overview', icon: 'home' },
-          { id: 'resources', label: 'My Resources', icon: 'users' },
-          { id: 'requirements', label: 'Opportunities', icon: 'briefcase' },
-          { id: 'applications', label: 'Applications', icon: 'trending-up' }
-        ]; track tab.id"
-        (click)="setActiveTab(tab.id)"
+        (click)="setActiveTab('overview')"
         [class]="'w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ' + 
-          (activeTab === tab.id
+          (activeTab === 'overview'
             ? 'bg-blue-50 text-blue-700 border border-blue-200'
             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
-        <lucide-icon [name]="tab.icon" class="w-5 h-5 mr-3"></lucide-icon>
-        <span class="font-medium">{{tab.label}}</span>
+        <lucide-icon name="home" class="w-5 h-5 mr-3"></lucide-icon>
+        <span class="font-medium">Overview</span>
+      </button>
+
+      <button
+        (click)="setActiveTab('resources')"
+        [class]="'w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ' + 
+          (activeTab === 'resources'
+            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
+        <lucide-icon name="users" class="w-5 h-5 mr-3"></lucide-icon>
+        <span class="font-medium">My Resources</span>
+      </button>
+
+      <button
+        (click)="setActiveTab('requirements')"
+        [class]="'w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ' + 
+          (activeTab === 'requirements'
+            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
+        <lucide-icon name="briefcase" class="w-5 h-5 mr-3"></lucide-icon>
+        <span class="font-medium">Opportunities</span>
+      </button>
+
+      <button
+        (click)="setActiveTab('applications')"
+        [class]="'w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ' + 
+          (activeTab === 'applications'
+            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
+        <lucide-icon name="trending-up" class="w-5 h-5 mr-3"></lucide-icon>
+        <span class="font-medium">Applications</span>
       </button>
 
       <!-- Vendor Management Dropdown -->
@@ -225,7 +250,257 @@
           </div>
         </div>
 
-        <!-- Other tabs would go here -->
+        <!-- Resources Tab -->
+        <div *ngSwitchCase="'resources'" class="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div class="p-6 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900">My Resources</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resource</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let resource of vendorResources; track resource.id" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{resource.name}}</div>
+                      <div class="text-sm text-gray-500">{{resource.location}}</div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span *ngFor="let skill of getFirstThreeSkills(resource.skills); track skill" 
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {{skill}}
+                      </span>
+                      <span *ngIf="resource.skills.length > 3" class="text-xs text-gray-500">
+                        +{{resource.skills.length - 3}} more
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{resource.experience}} years
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    ${{resource.rate}}/hr
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getAvailabilityClass(resource.availability)">
+                      {{resource.availability}}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="vendorResources.length === 0" class="text-center py-12">
+              <lucide-icon name="users" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">No resources</h3>
+              <p class="mt-1 text-sm text-gray-500">Get started by adding your first resource.</p>
+              <div class="mt-6">
+                <button
+                  (click)="showResourceModal = true"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Add Resource
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Requirements Tab -->
+        <div *ngSwitchCase="'requirements'" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div *ngFor="let req of requirements; track req.id" 
+               class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-start mb-4">
+              <h4 class="text-lg font-semibold text-gray-900">{{req.title}}</h4>
+              <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                {{req.status}}
+              </span>
+            </div>
+            <p class="text-gray-600 mb-4">{{req.description}}</p>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Company:</span>
+                <span class="font-medium">{{req.clientName}}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Budget:</span>
+                <span class="font-medium">${{req.budget}}/hr</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Duration:</span>
+                <span class="font-medium">{{req.duration}}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-500">Location:</span>
+                <span class="font-medium">{{req.location}}</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let skill of req.skills; track skill" 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                  {{skill}}
+                </span>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <button 
+                (click)="handleApplyResources(req.id)"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                Apply Resources
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Applications Tab -->
+        <div *ngSwitchCase="'applications'">
+          <app-applications-view userRole="vendor"></app-applications-view>
+        </div>
+
+        <!-- User Management Tab -->
+        <div *ngSwitchCase="'user-management'" class="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div class="p-6 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900">Organization Users</h3>
+            <p class="text-sm text-gray-600 mt-1">Manage users in your organization</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let user of organizationUsers; track user.id" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{user.name}}</div>
+                      <div class="text-sm text-gray-500">{{user.email}}</div>
+                      <div *ngIf="user.phone" class="text-xs text-gray-400">{{user.phone}}</div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getUserRoleClass(user.role)">
+                      {{user.role | titlecase}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{user.department || 'N/A'}}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getUserStatusClass(user.status)">
+                      {{user.status | titlecase}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{user.createdAt | date}}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      (click)="toggleUserStatus(user.id, user.status)"
+                      [class]="'text-sm px-3 py-1 rounded-lg transition-colors ' + 
+                        (user.status === 'active' 
+                          ? 'text-red-600 hover:bg-red-50' 
+                          : 'text-green-600 hover:bg-green-50')">
+                      {{user.status === 'active' ? 'Deactivate' : 'Activate'}}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="organizationUsers.length === 0" class="text-center py-12">
+              <lucide-icon name="user" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">No users added</h3>
+              <p class="mt-1 text-sm text-gray-500">Get started by adding your first organization user.</p>
+              <div class="mt-6">
+                <button
+                  (click)="showAddUserModal = true"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Add User
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skill Management Tab -->
+        <div *ngSwitchCase="'skill-management'" class="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div class="p-6 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900">Organization Skills</h3>
+            <p class="text-sm text-gray-600 mt-1">Manage your organization's skill portfolio</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skill</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proficiency</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted By</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let skill of organizationSkills; track skill.id" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900">{{skill.skillName}}</div>
+                      <div *ngIf="skill.description" class="text-xs text-gray-500 mt-1">{{skill.description}}</div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{skill.category}}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getProficiencyClass(skill.proficiencyLevel)">
+                      {{skill.proficiencyLevel | titlecase}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getSkillStatusClass(skill.status)">
+                      {{skill.status | titlecase}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{skill.submittedBy}}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{skill.submittedAt | date}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="organizationSkills.length === 0" class="text-center py-12">
+              <lucide-icon name="briefcase" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">No skills added</h3>
+              <p class="mt-1 text-sm text-gray-500">Get started by adding your first organization skill.</p>
+              <div class="mt-6">
+                <button
+                  (click)="showAddSkillModal = true"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                  Add Skill
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Default case for unknown tabs -->
         <div *ngSwitchDefault class="text-center py-12">
           <lucide-icon name="info" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
           <h3 class="mt-2 text-sm font-medium text-gray-900">Feature Coming Soon</h3>
