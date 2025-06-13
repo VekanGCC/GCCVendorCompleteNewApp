@@ -1,0 +1,795 @@
+<app-layout>
+  <div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
+      <!-- Header -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-gray-900">Admin Portal</h1>
+            <p class="text-sm text-gray-600 mt-1">{{user?.name}}</p>
+          </div>
+          <div class="bg-gradient-to-r from-red-600 to-pink-600 text-white p-2 rounded-lg">
+            <i-feather name="shield" class="w-4 h-4"></i-feather>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="flex-1 p-4 space-y-2">
+        <button
+          *ngFor="let tab of navigationTabs"
+          (click)="setActiveTab(tab.id)"
+          [class]="'w-full flex items-center justify-between px-4 py-3 text-left rounded-lg transition-colors ' + 
+            (activeTab === tab.id
+              ? 'bg-red-50 text-red-700 border border-red-200'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
+          <div class="flex items-center">
+            <i-feather [name]="tab.icon" class="w-5 h-5 mr-3"></i-feather>
+            <span class="font-medium">{{tab.label}}</span>
+          </div>
+          <span *ngIf="tab.badge && tab.badge > 0" 
+                class="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+            {{tab.badge}}
+          </span>
+        </button>
+      </nav>
+
+      <!-- Quick Stats -->
+      <div class="p-4 border-t border-gray-200" *ngIf="platformStats">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="p-2 rounded-lg bg-blue-50">
+                <i-feather name="users" class="w-4 h-4 text-blue-600"></i-feather>
+              </div>
+              <span class="ml-3 text-sm font-medium text-gray-700">Total Users</span>
+            </div>
+            <span class="text-lg font-bold text-gray-900">{{platformStats.totalUsers}}</span>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="p-2 rounded-lg bg-green-50">
+                <i-feather name="trending-up" class="w-4 h-4 text-green-600"></i-feather>
+              </div>
+              <span class="ml-3 text-sm font-medium text-gray-700">Applications</span>
+            </div>
+            <span class="text-lg font-bold text-gray-900">{{platformStats.totalApplications}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Content Header -->
+      <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              {{activeTab === 'overview' ? 'Platform Overview' :
+                activeTab === 'approvals' ? 'Pending Approvals' :
+                activeTab === 'skill-approvals' ? 'Vendor Skill Approvals' :
+                activeTab === 'skills' ? 'Skill Management' :
+                activeTab === 'transactions' ? 'All Transactions' :
+                'User Management'}}
+            </h2>
+            <p class="text-gray-600 mt-1">
+              {{activeTab === 'overview' ? 'Monitor platform performance and key metrics' :
+                activeTab === 'approvals' ? 'Review and approve pending registrations and skills' :
+                activeTab === 'skill-approvals' ? 'Review and approve vendor skill submissions' :
+                activeTab === 'skills' ? 'Manage platform skills and categories' :
+                activeTab === 'transactions' ? 'View all platform activities and transactions' :
+                'Manage all platform users and permissions'}}
+            </p>
+          </div>
+          <button
+            *ngIf="activeTab === 'skills'"
+            (click)="showAddSkillModal = true"
+            class="bg-gradient-to-r from-red-600 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-red-700 hover:to-pink-700 transition-all duration-200 flex items-center">
+            <i-feather name="plus" class="w-4 h-4 mr-2"></i-feather>
+            Add Skill
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <div [ngSwitch]="activeTab">
+          <!-- Overview Tab -->
+          <div *ngSwitchCase="'overview'" class="space-y-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="platformStats">
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600">Total Users</p>
+                    <p class="text-2xl font-bold text-gray-900">{{platformStats.totalUsers}}</p>
+                    <p class="text-xs text-green-600 mt-1">
+                      <i-feather name="trending-up" class="w-3 h-3 inline mr-1"></i-feather>
+                      +{{platformStats.monthlyGrowth.users}}% this month
+                    </p>
+                  </div>
+                  <div class="bg-blue-50 rounded-lg p-3">
+                    <i-feather name="users" class="w-6 h-6 text-blue-600"></i-feather>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600">Total Applications</p>
+                    <p class="text-2xl font-bold text-gray-900">{{platformStats.totalApplications}}</p>
+                    <p class="text-xs text-green-600 mt-1">
+                      <i-feather name="trending-up" class="w-3 h-3 inline mr-1"></i-feather>
+                      +{{platformStats.monthlyGrowth.applications}}% this month
+                    </p>
+                  </div>
+                  <div class="bg-green-50 rounded-lg p-3">
+                    <i-feather name="trending-up" class="w-6 h-6 text-green-600"></i-feather>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600">Pending Approvals</p>
+                    <p class="text-2xl font-bold text-gray-900">{{platformStats.pendingApprovals}}</p>
+                    <p class="text-xs text-yellow-600 mt-1">
+                      <i-feather name="clock" class="w-3 h-3 inline mr-1"></i-feather>
+                      Requires attention
+                    </p>
+                  </div>
+                  <div class="bg-yellow-50 rounded-lg p-3">
+                    <i-feather name="clock" class="w-6 h-6 text-yellow-600"></i-feather>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-600">Skill Approvals</p>
+                    <p class="text-2xl font-bold text-gray-900">{{pendingSkillApprovalsCount}}</p>
+                    <p class="text-xs text-blue-600 mt-1">
+                      <i-feather name="check-circle" class="w-3 h-3 inline mr-1"></i-feather>
+                      Vendor skills pending
+                    </p>
+                  </div>
+                  <div class="bg-purple-50 rounded-lg p-3">
+                    <i-feather name="check-circle" class="w-6 h-6 text-purple-600"></i-feather>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Recent Approvals -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                  <h3 class="text-lg font-semibold text-gray-900">Recent Approvals</h3>
+                </div>
+                <div class="p-6">
+                  <div *ngFor="let approval of pendingApprovals.slice(0, 5)" 
+                       class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center">
+                      <div [class]="'p-2 rounded-lg mr-3 ' + getApprovalTypeColor(approval.type)">
+                        <i-feather [name]="getApprovalTypeIcon(approval.type)" class="w-4 h-4"></i-feather>
+                      </div>
+                      <div>
+                        <p class="font-medium text-gray-900">{{approval.entityName}}</p>
+                        <p class="text-sm text-gray-600">{{approval.type | titlecase}} • {{approval.submittedAt | date}}</p>
+                      </div>
+                    </div>
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(approval.status)">
+                      {{approval.status | titlecase}}
+                    </span>
+                  </div>
+                  <p *ngIf="pendingApprovals.length === 0" class="text-gray-500 text-center py-8">No pending approvals</p>
+                </div>
+              </div>
+
+              <!-- Recent Skill Approvals -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                  <h3 class="text-lg font-semibold text-gray-900">Pending Skill Approvals</h3>
+                </div>
+                <div class="p-6">
+                  <div *ngFor="let skill of getPendingVendorSkills()" 
+                       class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center">
+                      <div class="p-2 rounded-lg mr-3 bg-blue-100">
+                        <i-feather name="briefcase" class="w-4 h-4 text-blue-600"></i-feather>
+                      </div>
+                      <div>
+                        <p class="font-medium text-gray-900">{{skill.skillName}}</p>
+                        <p class="text-sm text-gray-600">{{skill.category}} • {{skill.submittedBy}}</p>
+                      </div>
+                    </div>
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getProficiencyClass(skill.proficiencyLevel)">
+                      {{skill.proficiencyLevel | titlecase}}
+                    </span>
+                  </div>
+                  <p *ngIf="!hasPendingVendorSkills()" class="text-gray-500 text-center py-8">No pending skill approvals</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approvals Tab -->
+          <div *ngSwitchCase="'approvals'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">Pending Approvals</h3>
+                  <select
+                    [(ngModel)]="approvalFilter"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <option value="all">All Types</option>
+                    <option value="vendor">Vendors</option>
+                    <option value="client">Clients</option>
+                    <option value="skill">Skills</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entity</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted By</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let approval of getPaginatedItems(getFilteredApprovals())" class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div [class]="'p-2 rounded-lg mr-3 ' + getApprovalTypeColor(approval.type)">
+                            <i-feather [name]="getApprovalTypeIcon(approval.type)" class="w-4 h-4"></i-feather>
+                          </div>
+                          <div>
+                            <div class="text-sm font-medium text-gray-900">{{approval.entityName}}</div>
+                            <div class="text-sm text-gray-500">ID: {{approval.entityId}}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getApprovalTypeColor(approval.type)">
+                          {{approval.type | titlecase}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{approval.submittedBy}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{approval.submittedAt | date}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(approval.status)">
+                          {{approval.status | titlecase}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div *ngIf="approval.status === 'pending'" class="flex items-center space-x-2">
+                          <button
+                            (click)="openApprovalModal(approval)"
+                            class="text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
+                            <i-feather name="check" class="w-4 h-4 mr-1 inline"></i-feather>
+                            Approve
+                          </button>
+                          <button
+                            (click)="openRejectModal(approval)"
+                            class="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
+                            <i-feather name="x" class="w-4 h-4 mr-1 inline"></i-feather>
+                            Reject
+                          </button>
+                        </div>
+                        <div *ngIf="approval.status !== 'pending'" class="text-gray-500">
+                          {{approval.status === 'approved' ? 'Approved' : 'Rejected'}}
+                          <div class="text-xs">{{approval.reviewedAt | date}}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div *ngIf="getFilteredApprovals().length === 0" class="text-center py-12">
+                  <i-feather name="clock" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No pending approvals</h3>
+                  <p class="mt-1 text-sm text-gray-500">All approvals have been processed.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skill Approvals Tab -->
+          <div *ngSwitchCase="'skill-approvals'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">Vendor Skill Approvals</h3>
+                  <select
+                    [(ngModel)]="skillApprovalFilter"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skill</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proficiency</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let skill of getPaginatedItems(getFilteredVendorSkills())" class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div class="text-sm font-medium text-gray-900">{{skill.skillName}}</div>
+                          <div *ngIf="skill.description" class="text-sm text-gray-500 max-w-xs truncate">{{skill.description}}</div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div class="text-sm font-medium text-gray-900">{{getVendorName(skill.vendorId)}}</div>
+                          <div class="text-sm text-gray-500">{{skill.submittedBy}}</div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {{skill.category}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getProficiencyClass(skill.proficiencyLevel)">
+                          {{skill.proficiencyLevel | titlecase}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(skill.status)">
+                          {{skill.status | titlecase}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{skill.submittedAt | date}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div *ngIf="skill.status === 'pending'" class="flex items-center space-x-2">
+                          <button
+                            (click)="openSkillApprovalModal(skill)"
+                            class="text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1 rounded-lg transition-colors">
+                            <i-feather name="check" class="w-4 h-4 mr-1 inline"></i-feather>
+                            Approve
+                          </button>
+                          <button
+                            (click)="openSkillRejectModal(skill)"
+                            class="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
+                            <i-feather name="x" class="w-4 h-4 mr-1 inline"></i-feather>
+                            Reject
+                          </button>
+                        </div>
+                        <div *ngIf="skill.status !== 'pending'" class="text-gray-500">
+                          {{skill.status === 'approved' ? 'Approved' : 'Rejected'}}
+                          <div *ngIf="skill.reviewedAt" class="text-xs">{{skill.reviewedAt | date}}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div *ngIf="getFilteredVendorSkills().length === 0" class="text-center py-12">
+                  <i-feather name="check-circle" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No skill approvals found</h3>
+                  <p class="mt-1 text-sm text-gray-500">No vendor skills match the current filter.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Tab -->
+          <div *ngSwitchCase="'skills'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">Platform Skills</h3>
+                  <div class="flex items-center space-x-4">
+                    <select
+                      [(ngModel)]="skillFilter"
+                      class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                      <option value="all">All Categories</option>
+                      <option *ngFor="let category of getSkillCategories()" [value]="category">{{category}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skill</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let skill of getPaginatedItems(getFilteredSkills())" class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div class="text-sm font-medium text-gray-900">{{skill.name}}</div>
+                          <div *ngIf="skill.description" class="text-sm text-gray-500">{{skill.description}}</div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {{skill.category}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
+                          (skill.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                          {{skill.isActive ? 'Active' : 'Inactive'}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{skill.createdAt | date}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                          <button
+                            (click)="toggleSkillStatus(skill)"
+                            [class]="'px-3 py-1 rounded-lg transition-colors ' + 
+                              (skill.isActive 
+                                ? 'text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100' 
+                                : 'text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100')">
+                            {{skill.isActive ? 'Deactivate' : 'Activate'}}
+                          </button>
+                          <button
+                            (click)="deleteSkill(skill.id)"
+                            class="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div *ngIf="getFilteredSkills().length === 0" class="text-center py-12">
+                  <i-feather name="briefcase" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No skills found</h3>
+                  <p class="mt-1 text-sm text-gray-500">Add skills to get started.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transactions Tab -->
+          <div *ngSwitchCase="'transactions'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">All Transactions</h3>
+                  <select
+                    [(ngModel)]="transactionFilter"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                    <option value="all">All Types</option>
+                    <option value="application">Applications</option>
+                    <option value="requirement">Requirements</option>
+                    <option value="resource">Resources</option>
+                    <option value="user_registration">User Registrations</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let transaction of getPaginatedItems(getFilteredTransactions())" class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="p-2 rounded-lg mr-3 bg-gray-100">
+                            <i-feather [name]="getTransactionTypeIcon(transaction.type)" class="w-4 h-4 text-gray-600"></i-feather>
+                          </div>
+                          <div>
+                            <div class="text-sm font-medium text-gray-900">{{transaction.action}}</div>
+                            <div class="text-sm text-gray-500">ID: {{transaction.entityId}}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div class="text-sm font-medium text-gray-900">{{transaction.userName}}</div>
+                          <div class="text-sm text-gray-500">{{transaction.userRole | titlecase}}</div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {{formatTransactionType(transaction.type)}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{transaction.timestamp | date:'short'}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(transaction.status)">
+                          {{transaction.status | titlecase}}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div *ngIf="getFilteredTransactions().length === 0" class="text-center py-12">
+                  <i-feather name="activity" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No transactions found</h3>
+                  <p class="mt-1 text-sm text-gray-500">Transactions will appear here as users interact with the platform.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Tab -->
+          <div *ngSwitchCase="'users'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">All Platform Users</h3>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resources/Requirements</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let user of allUsers" class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mr-3">
+                            <i-feather name="user" class="w-5 h-5 text-white"></i-feather>
+                          </div>
+                          <div>
+                            <div class="text-sm font-medium text-gray-900">{{user.name}}</div>
+                            <div class="text-sm text-gray-500">{{user.email}}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
+                          (user.role === 'vendor' ? 'bg-blue-100 text-blue-800' : 
+                           user.role === 'client' ? 'bg-purple-100 text-purple-800' : 
+                           'bg-red-100 text-red-800')">
+                          {{user.role | titlecase}}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{user.company}}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div *ngIf="user.role === 'vendor'">
+                          {{getUserResourceCount(user)}} Resources
+                        </div>
+                        <div *ngIf="user.role === 'client'">
+                          {{getUserRequirementCount(user)}} Requirements
+                        </div>
+                        <div *ngIf="user.role === 'admin'">
+                          Admin User
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div *ngIf="user.role === 'vendor'">
+                          {{getUserVendorApplicationCount(user)}} Applications
+                        </div>
+                        <div *ngIf="user.role === 'client'">
+                          {{getUserClientApplicationCount(user)}} Applications
+                        </div>
+                        <div *ngIf="user.role === 'admin'">
+                          -
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Skill Modal -->
+    <app-add-admin-skill-modal 
+      *ngIf="showAddSkillModal" 
+      (close)="showAddSkillModal = false">
+    </app-add-admin-skill-modal>
+
+    <!-- Approval Modal -->
+    <div *ngIf="showApprovalModal && selectedApproval" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Approve {{selectedApproval.type | titlecase}}</h3>
+        </div>
+        
+        <div class="p-6">
+          <div class="mb-6">
+            <h4 class="font-medium text-gray-900 mb-2">{{selectedApproval.entityName}}</h4>
+            <p class="text-sm text-gray-600">Submitted by: {{selectedApproval.submittedBy}}</p>
+            <p class="text-sm text-gray-600">Date: {{selectedApproval.submittedAt | date}}</p>
+          </div>
+
+          <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h5 class="font-medium text-gray-900 mb-2">Details:</h5>
+            <pre class="text-sm text-gray-600 whitespace-pre-wrap">{{selectedApproval.data | json}}</pre>
+          </div>
+
+          <div class="flex items-center justify-end space-x-4">
+            <button
+              (click)="closeApprovalModal()"
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button
+              (click)="approveEntity(selectedApproval)"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              Approve
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div *ngIf="showRejectModal && selectedApproval" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Reject {{selectedApproval.type | titlecase}}</h3>
+        </div>
+        
+        <div class="p-6">
+          <div class="mb-4">
+            <p class="text-gray-600 mb-4">
+              Are you sure you want to reject "<strong>{{selectedApproval.entityName}}</strong>"?
+            </p>
+            
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Rejection Reason *
+            </label>
+            <textarea
+              [(ngModel)]="rejectNotes"
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="Please provide a reason for rejection..."></textarea>
+          </div>
+
+          <div class="flex items-center justify-end space-x-4">
+            <button
+              (click)="closeRejectModal()"
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button
+              (click)="rejectEntity()"
+              [disabled]="!isRejectNotesValid()"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Approval Modal -->
+    <div *ngIf="showSkillApprovalModal && selectedVendorSkill" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Approve Vendor Skill</h3>
+        </div>
+        
+        <div class="p-6">
+          <div class="mb-6">
+            <h4 class="font-medium text-gray-900 mb-2">{{selectedVendorSkill.skillName}}</h4>
+            <p class="text-sm text-gray-600">Category: {{selectedVendorSkill.category}}</p>
+            <p class="text-sm text-gray-600">Proficiency: {{selectedVendorSkill.proficiencyLevel | titlecase}}</p>
+            <p class="text-sm text-gray-600">Submitted by: {{selectedVendorSkill.submittedBy}}</p>
+            <p class="text-sm text-gray-600">Date: {{selectedVendorSkill.submittedAt | date}}</p>
+          </div>
+
+          <div *ngIf="selectedVendorSkill.description" class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h5 class="font-medium text-gray-900 mb-2">Description:</h5>
+            <p class="text-sm text-gray-600">{{selectedVendorSkill.description}}</p>
+          </div>
+
+          <div class="flex items-center justify-end space-x-4">
+            <button
+              (click)="closeSkillApprovalModal()"
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button
+              (click)="approveVendorSkill(selectedVendorSkill)"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              Approve Skill
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Reject Modal -->
+    <div *ngIf="showSkillRejectModal && selectedVendorSkill" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Reject Vendor Skill</h3>
+        </div>
+        
+        <div class="p-6">
+          <div class="mb-4">
+            <p class="text-gray-600 mb-4">
+              Are you sure you want to reject the skill "<strong>{{selectedVendorSkill.skillName}}</strong>" submitted by {{selectedVendorSkill.submittedBy}}?
+            </p>
+            
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Rejection Reason *
+            </label>
+            <textarea
+              [(ngModel)]="skillRejectNotes"
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              placeholder="Please provide a reason for rejection..."></textarea>
+          </div>
+
+          <div class="flex items-center justify-end space-x-4">
+            <button
+              (click)="closeSkillRejectModal()"
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button
+              (click)="rejectVendorSkill()"
+              [disabled]="!isSkillRejectNotesValid()"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Reject Skill
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

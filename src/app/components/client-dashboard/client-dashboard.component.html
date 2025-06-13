@@ -1,0 +1,485 @@
+<app-layout>
+  <div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
+      <!-- Header -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-xl font-bold text-gray-900">Client Portal</h1>
+            <p class="text-sm text-gray-600 mt-1">{{user?.name}}</p>
+          </div>
+          <button
+            (click)="showRequirementModal = true"
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200">
+            <i-feather name="plus" class="w-4 h-4"></i-feather>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="flex-1 p-4 space-y-2">
+        <button
+          *ngFor="let tab of [
+            { id: 'overview', label: 'Overview', icon: 'home' },
+            { id: 'requirements', label: 'My Requirements', icon: 'briefcase' },
+            { id: 'resources', label: 'Browse Resources', icon: 'users' },
+            { id: 'applications', label: 'Applications', icon: 'trending-up' }
+          ]"
+          (click)="setActiveTab(tab.id)"
+          [class]="'w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ' + 
+            (activeTab === tab.id
+              ? 'bg-purple-50 text-purple-700 border border-purple-200'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900')">
+          <i-feather [name]="tab.icon" class="w-5 h-5 mr-3"></i-feather>
+          <span class="font-medium">{{tab.label}}</span>
+        </button>
+      </nav>
+
+      <!-- Stats Summary -->
+      <div class="p-4 border-t border-gray-200">
+        <div class="space-y-3">
+          <div *ngFor="let stat of stats" class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div [class]="'p-2 rounded-lg ' + stat.bg">
+                <i-feather [name]="stat.icon" [class]="'w-4 h-4 ' + stat.color"></i-feather>
+              </div>
+              <span class="ml-3 text-sm font-medium text-gray-700">{{stat.title}}</span>
+            </div>
+            <span class="text-lg font-bold text-gray-900">{{stat.value}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Content Header -->
+      <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              {{activeTab === 'overview' ? 'Dashboard Overview' :
+                activeTab === 'requirements' ? 'My Requirements' :
+                activeTab === 'resources' ? 'Browse Resources' :
+                'Applications'}}
+            </h2>
+            <p class="text-gray-600 mt-1">
+              {{activeTab === 'overview' ? 'Welcome back to your dashboard' :
+                activeTab === 'requirements' ? 'Manage your posted requirements' :
+                activeTab === 'resources' ? 'Find the perfect talent for your needs' :
+                'Track application status and manage candidates'}}
+            </p>
+          </div>
+          <button
+            *ngIf="activeTab === 'requirements'"
+            (click)="showRequirementModal = true"
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center">
+            <i-feather name="plus" class="w-4 h-4 mr-2"></i-feather>
+            Post Requirement
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="flex-1 overflow-y-auto p-6">
+        <div [ngSwitch]="activeTab">
+          <!-- Overview Tab -->
+          <div *ngSwitchCase="'overview'" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Recent Applications -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                  <h3 class="text-lg font-semibold text-gray-900">Recent Applications</h3>
+                </div>
+                <div class="p-6">
+                  <div *ngFor="let app of clientApplications.slice(0, 5)" 
+                       class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div>
+                      <p class="font-medium text-gray-900">{{getResourceName(app.resourceId)}}</p>
+                      <p class="text-sm text-gray-600">{{getRequirementTitle(app.requirementId)}}</p>
+                    </div>
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusBadge(app.status).color">
+                      <i-feather [name]="getStatusBadge(app.status).icon" class="w-3 h-3 mr-1"></i-feather>
+                      {{formatStatus(app.status)}}
+                    </span>
+                  </div>
+                  <p *ngIf="clientApplications.length === 0" class="text-gray-500 text-center py-8">No applications yet</p>
+                </div>
+              </div>
+
+              <!-- Top Resources -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                  <h3 class="text-lg font-semibold text-gray-900">Available Resources</h3>
+                </div>
+                <div class="p-6">
+                  <div *ngFor="let resource of resources.slice(0, 5)" 
+                       class="py-3 border-b border-gray-100 last:border-0">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <p class="font-medium text-gray-900">{{resource.name}}</p>
+                        <p class="text-sm text-gray-600">{{resource.vendorName}}</p>
+                        <div class="flex items-center mt-1 space-x-4">
+                          <span class="text-xs text-gray-500">${{resource.rate}}/hr</span>
+                          <span class="text-xs text-gray-500">{{resource.experience}} yrs exp</span>
+                        </div>
+                      </div>
+                      <span [class]="'text-xs px-2 py-1 rounded-full ' + getAvailabilityClass(resource.availability)">
+                        {{resource.availability}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  (click)="showRequirementModal = true"
+                  class="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors text-left">
+                  <i-feather name="plus" class="w-6 h-6 text-purple-600 mb-2"></i-feather>
+                  <h4 class="font-medium text-gray-900">Post New Requirement</h4>
+                  <p class="text-sm text-gray-600 mt-1">Create a new job posting to find talent</p>
+                </button>
+                
+                <button
+                  (click)="setActiveTab('resources')"
+                  class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left">
+                  <i-feather name="users" class="w-6 h-6 text-blue-600 mb-2"></i-feather>
+                  <h4 class="font-medium text-gray-900">Browse Resources</h4>
+                  <p class="text-sm text-gray-600 mt-1">Find and apply resources to your requirements</p>
+                </button>
+                
+                <button
+                  (click)="setActiveTab('applications')"
+                  class="p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors text-left">
+                  <i-feather name="trending-up" class="w-6 h-6 text-green-600 mb-2"></i-feather>
+                  <h4 class="font-medium text-gray-900">Manage Applications</h4>
+                  <p class="text-sm text-gray-600 mt-1">Review and manage candidate applications</p>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Requirements Tab -->
+          <div *ngSwitchCase="'requirements'">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div *ngFor="let req of clientRequirements" 
+                   class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                  <h4 class="text-lg font-semibold text-gray-900">{{req.title}}</h4>
+                  <div class="flex items-center space-x-2">
+                    <span [class]="'text-sm px-2 py-1 rounded-full ' + getRequirementStatusClass(req.status)">
+                      {{req.status}}
+                    </span>
+                    <div class="relative" *ngIf="req.status === 'open'">
+                      <button
+                        (click)="toggleRequirementActions(req.id)"
+                        class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i-feather name="more-horizontal" class="w-4 h-4"></i-feather>
+                      </button>
+                      <div *ngIf="showActionsForRequirement === req.id" 
+                           class="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                        <button
+                          (click)="openCloseRequirementModal(req)"
+                          class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          Close Requirement
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-gray-600 mb-4">{{req.description}}</p>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">Budget:</span>
+                    <span class="font-medium">${{req.budget}}/hr</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">Duration:</span>
+                    <span class="font-medium">{{req.duration}}</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">Location:</span>
+                    <span class="font-medium">{{req.location}}</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500">Experience:</span>
+                    <span class="font-medium">{{req.experience}}+ years</span>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let skill of req.skills" 
+                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {{skill}}
+                    </span>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                  <div class="text-sm text-gray-500">
+                    Posted on {{req.createdAt | date}}
+                  </div>
+                </div>
+              </div>
+              
+              <div *ngIf="clientRequirements.length === 0" class="col-span-2 text-center py-12">
+                <i-feather name="briefcase" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No requirements posted</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by posting your first requirement.</p>
+                <div class="mt-6">
+                  <button
+                    (click)="showRequirementModal = true"
+                    class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    Post Requirement
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resources Tab with Search -->
+          <div *ngSwitchCase="'resources'">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-semibold text-gray-900">Available Resources</h3>
+                  <div class="text-sm text-gray-500">
+                    {{filteredResources.length}} of {{resources.length}} resources
+                  </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="space-y-4">
+                  <!-- Search Bar -->
+                  <div class="relative">
+                    <i-feather name="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></i-feather>
+                    <input
+                      type="text"
+                      [(ngModel)]="searchQuery"
+                      (input)="applyFilters()"
+                      placeholder="Search by name, skills, vendor, or description..."
+                      class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                  </div>
+
+                  <!-- Filter Row -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <!-- Skill Filter -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Skill</label>
+                      <select
+                        [(ngModel)]="selectedSkillFilter"
+                        (change)="applyFilters()"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">All Skills</option>
+                        <option *ngFor="let skill of availableSkills" [value]="skill">{{skill}}</option>
+                      </select>
+                    </div>
+
+                    <!-- Location Filter -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Location</label>
+                      <select
+                        [(ngModel)]="selectedLocationFilter"
+                        (change)="applyFilters()"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">All Locations</option>
+                        <option *ngFor="let location of availableLocations" [value]="location">{{location}}</option>
+                      </select>
+                    </div>
+
+                    <!-- Availability Filter -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Availability</label>
+                      <select
+                        [(ngModel)]="selectedAvailabilityFilter"
+                        (change)="applyFilters()"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">All Status</option>
+                        <option *ngFor="let availability of availabilityOptions" [value]="availability">
+                          {{availability | titlecase}}
+                        </option>
+                      </select>
+                    </div>
+
+                    <!-- Experience Filter -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Min Experience</label>
+                      <select
+                        [(ngModel)]="minExperienceFilter"
+                        (change)="applyFilters()"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option [value]="0">Any</option>
+                        <option [value]="1">1+ years</option>
+                        <option [value]="3">3+ years</option>
+                        <option [value]="5">5+ years</option>
+                        <option [value]="7">7+ years</option>
+                        <option [value]="10">10+ years</option>
+                      </select>
+                    </div>
+
+                    <!-- Rate Filter -->
+                    <div>
+                      <label class="block text-xs font-medium text-gray-700 mb-1">Max Rate</label>
+                      <select
+                        [(ngModel)]="maxRateFilter"
+                        (change)="applyFilters()"
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option [value]="500">Any</option>
+                        <option [value]="50">$50/hr</option>
+                        <option [value]="75">$75/hr</option>
+                        <option [value]="100">$100/hr</option>
+                        <option [value]="150">$150/hr</option>
+                        <option [value]="200">$200/hr</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Clear Filters Button -->
+                  <div class="flex justify-end">
+                    <button
+                      (click)="clearFilters()"
+                      class="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                      Clear All Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resources Grid -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
+                <div *ngFor="let resource of filteredResources" 
+                     class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                  <div class="flex justify-between items-start mb-4">
+                    <div>
+                      <h4 class="text-lg font-semibold text-gray-900">{{resource.name}}</h4>
+                      <p class="text-sm text-gray-600">{{resource.vendorName}}</p>
+                    </div>
+                    <span [class]="'text-xs px-2 py-1 rounded-full ' + getAvailabilityClass(resource.availability)">
+                      {{resource.availability}}
+                    </span>
+                  </div>
+                  <p class="text-gray-600 mb-4 text-sm">{{resource.description}}</p>
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-500">Experience:</span>
+                      <span class="font-medium">{{resource.experience}} years</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-500">Rate:</span>
+                      <span class="font-medium">${{resource.rate}}/hr</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-500">Location:</span>
+                      <span class="font-medium">{{resource.location}}</span>
+                    </div>
+                  </div>
+                  <div class="mb-4">
+                    <div class="flex flex-wrap gap-1">
+                      <span *ngFor="let skill of getFirstFourSkills(resource.skills)" 
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {{skill}}
+                      </span>
+                      <span *ngIf="resource.skills.length > 4" class="text-xs text-gray-500">
+                        +{{resource.skills.length - 4}} more
+                      </span>
+                    </div>
+                  </div>
+                  <div class="pt-4 border-t border-gray-100">
+                    <button 
+                      (click)="handleApplyResource(resource.id)"
+                      class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                      Apply for Requirements
+                    </button>
+                  </div>
+                </div>
+
+                <!-- No Results Message -->
+                <div *ngIf="filteredResources.length === 0" class="col-span-full text-center py-12">
+                  <i-feather name="search" class="mx-auto h-12 w-12 text-gray-400"></i-feather>
+                  <h3 class="mt-2 text-sm font-medium text-gray-900">No resources found</h3>
+                  <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria or filters.</p>
+                  <div class="mt-6">
+                    <button
+                      (click)="clearFilters()"
+                      class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                      Clear Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Applications Tab -->
+          <div *ngSwitchCase="'applications'">
+            <app-applications-view userRole="client"></app-applications-view>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requirement Modal -->
+    <app-requirement-modal 
+      *ngIf="showRequirementModal" 
+      (close)="showRequirementModal = false">
+    </app-requirement-modal>
+
+    <!-- Apply Resource Modal -->
+    <app-apply-resource-modal 
+      *ngIf="showApplyModal" 
+      [resourceId]="selectedResourceId"
+      (close)="closeApplyModal()">
+    </app-apply-resource-modal>
+
+    <!-- Close Requirement Confirmation Modal -->
+    <div *ngIf="showCloseRequirementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+        <div class="p-6">
+          <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+              <i-feather name="alert-triangle" class="w-5 h-5 text-red-600"></i-feather>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Close Requirement</h3>
+          </div>
+          
+          <div class="mb-6">
+            <p class="text-gray-600 mb-4">
+              Are you sure you want to close the requirement "<strong>{{requirementToClose?.title}}</strong>"?
+            </p>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div class="flex">
+                <i-feather name="alert-triangle" class="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5"></i-feather>
+                <div class="text-sm text-yellow-800">
+                  <p class="font-medium mb-1">This action cannot be undone.</p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li>The requirement will be marked as closed</li>
+                    <li>No new applications will be accepted</li>
+                    <li>Existing applications will remain unchanged</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end space-x-4">
+            <button
+              (click)="closeCloseRequirementModal()"
+              class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              Cancel
+            </button>
+            <button
+              (click)="confirmCloseRequirement()"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+              Close Requirement
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-layout>

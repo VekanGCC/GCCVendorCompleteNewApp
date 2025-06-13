@@ -1,0 +1,348 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+  <!-- Navigation Header -->
+  <nav class="relative z-10 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center">
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-2">
+            <i-feather name="home" class="w-6 h-6 text-white"></i-feather>
+          </div>
+          <span class="ml-3 text-xl font-bold text-gray-900">TalentBridge</span>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <button
+            (click)="navigateToLogin()"
+            class="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-all duration-200 font-medium">
+            Sign In
+          </button>
+          <button
+            (click)="navigateToSignUp()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
+      <div class="text-center">
+        <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+          Connect IT Talent
+          <span class="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            With Opportunities
+          </span>
+        </h1>
+        
+        <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+          The premier platform for IT staff augmentation. Whether you're a vendor with skilled resources 
+          or a client seeking top talent, TalentBridge makes connections seamless and efficient.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <button
+            (click)="navigateToSignUp()"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold text-lg shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transform">
+            <i-feather name="user" class="w-5 h-5 mr-2 inline"></i-feather>
+            Start Your Journey
+          </button>
+          
+          <button
+            (click)="navigateToLogin()"
+            class="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all duration-200 font-semibold text-lg hover:bg-blue-50">
+            <i-feather name="log-in" class="w-5 h-5 mr-2 inline"></i-feather>
+            Sign In
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Why Choose TalentBridge?
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Our platform streamlines the entire staff augmentation process, from discovery to onboarding.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <!-- Feature 1 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="users" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Smart Matching</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Our intelligent algorithm matches the right talent with the right opportunities based on skills, experience, and requirements.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="trending-up" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Real-time Tracking</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Track applications, manage interviews, and monitor progress with our comprehensive dashboard and analytics.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="briefcase" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Streamlined Process</h3>
+          <p class="text-gray-600 leading-relaxed">
+            From posting requirements to final onboarding, our platform simplifies every step of the hiring process.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="shield" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Secure & Reliable</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Enterprise-grade security ensures your data and communications are protected throughout the process.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="clock" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Fast Deployment</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Reduce time-to-hire with our efficient matching system and streamlined communication tools.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="group text-center hover:scale-105 transition-transform duration-300">
+          <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 w-20 h-20 mx-auto mb-6 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+            <i-feather name="bar-chart" class="w-8 h-8 text-white mx-auto mt-2"></i-feather>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Analytics & Insights</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Make data-driven decisions with comprehensive analytics on hiring trends and performance metrics.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          How It Works
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Get started in minutes with our simple, three-step process.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <!-- For Vendors -->
+        <div class="space-y-8">
+          <h3 class="text-3xl font-bold text-gray-900 mb-8 text-center lg:text-left">
+            <i-feather name="package" class="w-8 h-8 inline mr-3 text-blue-600"></i-feather>
+            For Vendors
+          </h3>
+          
+          <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+              <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">1</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Add Your Resources</h4>
+                <p class="text-gray-600">Upload your talented professionals with their skills, experience, and availability.</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">2</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Browse Opportunities</h4>
+                <p class="text-gray-600">Explore client requirements and apply your best-matched resources.</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">3</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Track & Manage</h4>
+                <p class="text-gray-600">Monitor application status and manage your team through our dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- For Clients -->
+        <div class="space-y-8">
+          <h3 class="text-3xl font-bold text-gray-900 mb-8 text-center lg:text-left">
+            <i-feather name="target" class="w-8 h-8 inline mr-3 text-indigo-600"></i-feather>
+            For Clients
+          </h3>
+          
+          <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+              <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">1</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Post Requirements</h4>
+                <p class="text-gray-600">Define your project needs, required skills, budget, and timeline.</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">2</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Review Applications</h4>
+                <p class="text-gray-600">Browse qualified candidates and review their profiles and experience.</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">3</div>
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-2">Hire & Onboard</h4>
+                <p class="text-gray-600">Select the best candidates and seamlessly onboard them to your team.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Trusted by Industry Leaders
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Join thousands of companies and professionals who trust TalentBridge for their staffing needs.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">10K+</div>
+          <div class="text-gray-600 font-medium">Active Resources</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl md:text-5xl font-bold text-indigo-600 mb-2">500+</div>
+          <div class="text-gray-600 font-medium">Partner Companies</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl md:text-5xl font-bold text-green-600 mb-2">95%</div>
+          <div class="text-gray-600 font-medium">Success Rate</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl md:text-5xl font-bold text-purple-600 mb-2">24/7</div>
+          <div class="text-gray-600 font-medium">Support Available</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+        Ready to Transform Your Hiring?
+      </h2>
+      <p class="text-xl text-blue-100 mb-12 leading-relaxed">
+        Join TalentBridge today and experience the future of IT staff augmentation. 
+        Whether you're looking for talent or offering your skills, we've got you covered.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+        <button
+          (click)="navigateToSignUp()"
+          class="bg-white text-blue-600 px-8 py-4 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transform">
+          <i-feather name="arrow-right" class="w-5 h-5 mr-2 inline"></i-feather>
+          Get Started Free
+        </button>
+        
+        <button
+          (click)="navigateToLogin()"
+          class="border-2 border-white text-white px-8 py-4 rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200 font-semibold text-lg">
+          <i-feather name="log-in" class="w-5 h-5 mr-2 inline"></i-feather>
+          Sign In
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="col-span-1 md:col-span-2">
+          <div class="flex items-center mb-6">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-2">
+              <i-feather name="home" class="w-6 h-6 text-white"></i-feather>
+            </div>
+            <span class="ml-3 text-xl font-bold">TalentBridge</span>
+          </div>
+          <p class="text-gray-400 mb-6 max-w-md">
+            Connecting IT talent with opportunities worldwide. The premier platform for staff augmentation and talent acquisition.
+          </p>
+          <div class="flex space-x-4">
+            <button class="bg-gray-800 hover:bg-gray-700 p-3 rounded-lg transition-colors">
+              <i-feather name="twitter" class="w-5 h-5"></i-feather>
+            </button>
+            <button class="bg-gray-800 hover:bg-gray-700 p-3 rounded-lg transition-colors">
+              <i-feather name="linkedin" class="w-5 h-5"></i-feather>
+            </button>
+            <button class="bg-gray-800 hover:bg-gray-700 p-3 rounded-lg transition-colors">
+              <i-feather name="github" class="w-5 h-5"></i-feather>
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Platform</h3>
+          <ul class="space-y-3 text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors">For Vendors</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">For Clients</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-semibold mb-6">Support</h3>
+          <ul class="space-y-3 text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+        <p>&copy; 2024 TalentBridge. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>
