@@ -230,7 +230,7 @@ export class VendorDashboardComponent implements OnInit {
       onboarded: { color: 'bg-teal-100 text-teal-800', icon: 'check-circle' }
     };
     
-    return statusConfig[status] || statusConfig.pending;
+    return statusConfig[status] || statusConfig['pending'];
   }
 
   handleApplyResources(requirementId: string): void {
