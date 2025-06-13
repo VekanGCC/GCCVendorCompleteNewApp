@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
 import { ApiService } from './api.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -94,6 +95,12 @@ export class AuthService {
       this.clearStoredAuth();
       this.router.navigate(['/']);
     }
+  }
+
+  getUsers(): Observable<User[]> {
+    return this.apiService.getUsers().pipe(
+      map(response => response.success ? response.data : [])
+    );
   }
 
   get currentUser(): User | null {
