@@ -46,6 +46,13 @@ export class LoginComponent {
       password: 'demo123',
       company: 'StartupXYZ',
       description: 'Fast-growing startup needing developers'
+    },
+    { 
+      role: 'Admin', 
+      email: 'admin@talentbridge.com', 
+      password: 'demo123',
+      company: 'TalentBridge',
+      description: 'Platform administrator with full access'
     }
   ];
 
